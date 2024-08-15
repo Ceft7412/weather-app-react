@@ -1,1 +1,1 @@
-![Image description](./public/image.img)
+![Image description](./public/Weather-App.png)
