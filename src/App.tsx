@@ -27,7 +27,6 @@ function App() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [unit, setUnit] = useState<string>("C");
-  const timeoutId = useRef<NodeJS.Timeout | null>(null);
   useEffect(() => {
     const fetchWeather = async () => {
       try {
@@ -40,10 +39,6 @@ function App() {
             q: city,
           },
         });
-        if (response.status !== 200) {
-          console.log("what");
-        }
-
         setWeather(response.data);
       } catch (err) {
         setError("Error fetching weather data");
@@ -51,15 +46,9 @@ function App() {
         setLoading(false);
       }
     };
-    if (timeoutId.current) {
-      clearTimeout(timeoutId.current);
+    if (city && city.length >= 3) {
+      fetchWeather();
     }
-
-    timeoutId.current = setTimeout(() => {
-      if (city) {
-        fetchWeather();
-      }
-    }, 300);
   }, [city]);
 
   return (
@@ -107,7 +96,7 @@ function App() {
                 </div>
               </>
             ) : (
-              <span className="font-medium text-[26px] text-neutral-500">
+              <span className="font-medium sm:text-[26px] text-neutral-500">
                 Oops! No location yet.
               </span>
             )}
