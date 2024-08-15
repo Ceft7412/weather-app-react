@@ -66,7 +66,7 @@ function App() {
               placeholder="Enter country and city name"
             />
           </section>
-          <section className="relative flex-1 flex flex-col justify-center items-center mb-32 w-full">
+          <section className="relative flex-1 flex flex-col justify-center items-center mb-48 w-full">
             {weather ? (
               <>
                 <div className="flex flex-col items-center">
