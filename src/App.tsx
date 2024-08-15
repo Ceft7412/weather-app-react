@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { spawn } from "child_process";
 
@@ -16,18 +16,18 @@ type Weather = {
   location: {
     name: string;
     country: string;
-    localtime: string;  
+    localtime: string;
   };
 } | null;
 
 function App() {
   const [weather, setWeather] = useState<Weather>(null);
   const [width, setWidth] = useState<number>(50);
-  const [city, setCity] = useState<string | null>(""); // Default city
+  const [city, setCity] = useState<string | null>("");
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [unit, setUnit] = useState<string>("C");
-
+  const timeoutId = useRef<NodeJS.Timeout | null>(null);
   useEffect(() => {
     const fetchWeather = async () => {
       try {
@@ -40,6 +40,9 @@ function App() {
             q: city,
           },
         });
+        if (response.status !== 200) {
+          console.log("what");
+        }
 
         setWeather(response.data);
       } catch (err) {
@@ -48,12 +51,17 @@ function App() {
         setLoading(false);
       }
     };
+    if (timeoutId.current) {
+      clearTimeout(timeoutId.current);
+    }
 
-    fetchWeather();
+    timeoutId.current = setTimeout(() => {
+      if (city) {
+        fetchWeather();
+      }
+    }, 300);
   }, [city]);
-  console.log("weather: ", weather);
 
-  console.log(import.meta.env.VITE_WEATHER_API);
   return (
     <>
       <main className="relative min-h-screen flex  justify-center max-w-screen-2xl min-w-80 mx-auto">
@@ -84,6 +92,9 @@ function App() {
                 <span className="text-neutral-400 font-medium text-[16px] text-center">
                   It's {weather.current.condition.text.toLowerCase()} in{" "}
                   {weather.location.name}, {weather.location.country}
+                </span>
+                <span className="mt-10 text-neutral-500 font-medium">
+                  {weather.location.localtime}
                 </span>
                 <div className="absolute sm:right-32 flex top-0 gap-5 sm:flex-col">
                   <span className="sm:text-[26px] font-medium text-neutral-500 flex flex-col items-center">
